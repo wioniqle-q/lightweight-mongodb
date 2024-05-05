@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using MongoDB.Dev.Core.Abstracts;
 using MongoDB.Dev.Core.Interfaces;
 using MongoDB.Driver;
 
 namespace MongoDB.Dev.Core.Persistences;
 
-public sealed class MongoPersistence(ISharedLockAsync sharedLockAsync)
+public sealed class MongoPersistence(ISharedLockAsync sharedLockAsync) : MongoPersistenceAbstract
 {
-    public async ValueTask Initialize(IServiceCollection services, Func<IMongoClient> clientFactory,
+    public override async ValueTask Initialize(IServiceCollection services, Func<IMongoClient> clientFactory,
         Func<IMongoDatabase> databaseFactory)
     {
         try
