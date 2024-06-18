@@ -6,17 +6,14 @@ using MongoDB.Driver;
 
 namespace MongoDB.Dev.Core.Persistences;
 
-public sealed class MongoPersistence(ISharedLockAsync sharedLockAsync) : MongoPersistenceAbstract
+public sealed class MongoPersistence : MongoPersistenceAbstract
 {
     public override async ValueTask Initialize(IServiceCollection services, Func<IMongoClient> clientFactory,
         Func<IMongoDatabase> databaseFactory)
     {
         try
         {
-            await using (await sharedLockAsync.AsyncSemaphore.WaitAsync())
-            {
-                await InitAsync(services, clientFactory, databaseFactory);
-            }
+            await InitAsync(services, clientFactory, databaseFactory);
         }
         catch (Exception exception) when (exception is TaskCanceledException)
         {
