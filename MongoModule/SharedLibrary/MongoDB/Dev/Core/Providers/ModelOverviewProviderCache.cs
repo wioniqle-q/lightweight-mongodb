@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using MongoDB.Dev.Core.Abstracts;
 using MongoDB.Dev.Core.Descriptors;
 using MongoDB.Dev.Core.Interfaces;
@@ -17,8 +17,15 @@ internal sealed class ModelOverviewProviderCache : ModelOverviewProviderCacheAbs
 
     public override ModelOverview GetOrAdd(Type readModelType, Func<Type, ModelOverview> valueFactory)
     {
-        return _cache.TryGetValue(readModelType, out var modelOverview)
-            ? modelOverview
-            : _cache.GetValue(readModelType, key => valueFactory(key));
+        if (_cache.TryGetValue(readModelType, out var modelOverview)) return modelOverview;
+
+        modelOverview = CreateModelOverview(readModelType, valueFactory);
+        _cache.Add(readModelType, modelOverview);
+        return modelOverview;
+
+        static ModelOverview CreateModelOverview(Type type, Func<Type, ModelOverview> valueFactory)
+        {
+            return valueFactory(type);
+        }
     }
 }
